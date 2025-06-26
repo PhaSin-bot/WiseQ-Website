@@ -1,73 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login | Expense Tracker</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Expense Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
-      background-color: #e6f2ff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background-color: #f0faff;
       margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background 0.3s ease;
     }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    header {
+      background-color: #b3e5fc;
       width: 100%;
-      max-width: 400px;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      color: #333;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
     }
-    h2 { text-align: center; margin-bottom: 20px; color: #333; }
-    input, button {
-      width: 100%; padding: 12px; margin: 8px 0;
-      border: 1px solid #ccc; border-radius: 8px;
+    .welcome {
+      margin: 20px;
+      font-size: 20px;
+      color: #333;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .form-section, .summary-section, .history-section {
+      width: 90%;
+      max-width: 700px;
+      background: #fff;
+      padding: 20px;
+      margin: 10px auto;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
     }
     button {
-      background-color: #4CAF50; color: white; border: none;
-      font-size: 16px; cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    button:hover { background-color: #45a049; }
-    .toggle-link {
-      text-align: center; margin-top: 10px; color: #007bff; cursor: pointer;
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
     }
-    .hidden { display: none; }
-    #loading {
-      text-align: center; margin-top: 10px; color: #555;
+    .summary-box {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
     }
+    .summary-box div {
+      background: #e1f5fe;
+      padding: 10px;
+      border-radius: 10px;
+      width: 45%;
+      text-align: center;
+    }
+    #chartContainer {
+      margin-top: 20px;
+    }
+    #currency {
+      width: auto;
+      margin-left: 10px;
+    }
+    .dark-mode {
+      background-color: #222;
+      color: #fff;
+    }
+    .dark-mode header {
+      background-color: #333;
+      color: #fff;
+    }
+    .toggle-darkmode {
+      margin-top: 10px;
+      cursor: pointer;
+      background: #333;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+    }
+    .mute-toggle {
+      background-color: #607d8b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+ 
+    
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2 id="formTitle">Login</h2>
-    <form id="authForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password (min 6 chars)" required />
-      <div id="confirmPasswordField" class="hidden">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password" />
-      </div>
-      <button type="submit" id="formButton">Login</button>
-    </form>
+  <header>
+    💸 Expense Tracker Dashboard 💰
+    
+    <select id="currency">
+      <option value="$">USD</option>
+      <option value="RM">RM</option>
+      <option value="฿">BAHT</option>
+      <option value="S$">SGD</option>
+      <option value="MMK">MMK</option>
+      <option value="£">GBP</option>
+      <option value="€">EUR</option>
+      <option value="¥">JPY</option>
+      <option value="₩">KRW</option>
+      <option value="₹">INR</option>
+      <option value="C$">CAD</option>
+      <option value="A$">AUD</option>
+      <option value="CHF">CHF</option>
+      <option value="HK$">HKD</option>
+      <option value="NT$">TWD</option>
+    </select>
+  </header>
 
-    <div class="toggle-link" id="toggleLink">Don't have an account? Sign up</div>
-    <div class="toggle-link" id="forgotPasswordLink">Forgot your password?</div>
+  <div class="welcome">🎯 Track smarter, spend wiser! 💡</div>
 
-    <div id="loading" class="hidden">Processing...</div>
+  <div class="form-section">
+    <h3>➕ Add Transaction</h3>
+    <input type="number" id="amount" placeholder="💵 Amount" required>
+    <div class="button-group">
+      <button onclick="selectType('income')">💰 Income</button>
+      <button onclick="selectType('expense')">🛍️ Expense</button>
+    </div>
+    <select id="category">
+      <option>🍔 Food & Drinks</option>
+      <option>🚌 Transportation</option>
+      <option>🏠 Rent/Bills</option>
+      <option>🛒 Shopping</option>
+      <option>🎮 Entertainment</option>
+      <option>💪 Health & Fitness</option>
+      <option>📚 Education</option>
+      <option>📺 Subscriptions</option>
+      <option>✈️ Travel</option>
+      <option>💵 Savings</option>
+      <option>📝 Others</option>
+    </select>
+    <input type="date" id="date">
+    <textarea id="notes" placeholder="🗒️ Notes (optional)"></textarea>
+    <button onclick="addTransaction()">✅ Add</button>
+    <button onclick="toggleDarkMode()" class="toggle-darkmode">🌓 Toggle Dark Mode</button>
+    <button onclick="toggleMute()" class="mute-toggle" id="muteBtn">🔈 Mute</button>
   </div>
 
-  <!-- Firebase SDK and Module Logic -->
+  <div class="summary-section">
+    <h3>📊 Monthly Summary</h3>
+    <div class="summary-box">
+      <div>💸 Total Income: <span id="totalIncome">$0</span></div>
+      <div>💳 Total Expenses: <span id="totalExpense">$0</span></div>
+    </div>
+    <div id="chartContainer">
+      <canvas id="summaryChart"></canvas>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <h3>📜 Transaction History</h3>
+    <input type="text" id="searchBox" placeholder="🔍 Search by category/date/amount" oninput="filterTransactions()">
+    <ul id="transactionList"></ul>
+  </div>
+
+  <audio id="sound-add" src="https://cdn.pixabay.com/audio/2022/03/15/audio_9a6c2ed7f7.mp3"></audio>
+  <audio id="sound-error" src="https://cdn.pixabay.com/audio/2022/03/15/audio_cfa0f6dc5a.mp3"></audio>
+
+  <!-- ✅ Firebase + Logout Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA1hw7oUkgyr3XOwCjb-eY0rteT3h02UXw",
@@ -82,74 +208,138 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    let isSignup = false;
-
-    function toggleForm() {
-      isSignup = !isSignup;
-      document.getElementById('formTitle').innerText = isSignup ? 'Sign Up' : 'Login';
-      document.getElementById('formButton').innerText = isSignup ? 'Sign Up' : 'Login';
-      document.getElementById('toggleLink').innerText = isSignup ? 'Already have an account? Login' : "Don't have an account? Sign up";
-      document.getElementById('confirmPasswordField').classList.toggle('hidden', !isSignup);
-      document.getElementById('forgotPasswordLink').classList.toggle('hidden', isSignup);
-    }
-
-    async function resetPassword() {
-      const email = document.getElementById('email').value.trim();
-      if (!email) {
-        alert("⚠️ Please enter your email to receive a reset link.");
-        return;
-      }
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("📧 Password reset email sent. Please check your inbox.");
-      } catch (error) {
-        alert("⚠️ " + error.message);
-      }
-    }
-
-    document.getElementById('authForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const loadingText = document.getElementById('loading');
-      const submitBtn = document.getElementById('formButton');
-
-      submitBtn.disabled = true;
-      loadingText.classList.remove('hidden');
-
-      try {
-        if (isSignup) {
-          const confirmPassword = document.getElementById('confirmPassword').value.trim();
-          if (password !== confirmPassword) {
-            alert("⚠️ Passwords do not match.");
-            return;
-          }
-          await createUserWithEmailAndPassword(auth, email, password);
-          alert("✅ Signup successful! Please log in.");
-          document.getElementById('authForm').reset();
-          toggleForm();
-        } else {
-          await signInWithEmailAndPassword(auth, email, password);
-          alert("🎉 Login successful! Redirecting...");
-          window.location.href = 'dashboard.html';
-        }
-      } catch (error) {
-        alert("⚠️ " + error.message);
-      } finally {
-        submitBtn.disabled = false;
-        loadingText.classList.add('hidden');
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("⚠️ Access denied. Please log in first.");
+        window.location.href = "login.html";
       }
     });
 
-    // Export to global for inline event listeners
-    window.toggleForm = toggleForm;
-    window.resetPassword = resetPassword;
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      if (confirm("Are you sure you want to log out?")) {
+        signOut(auth)
+          .then(() => {
+            alert("👋 Logged out successfully. Redirecting to login...");
+            setTimeout(() => window.location.href = "login.html", 1000);
+          })
+          .catch((error) => alert("❌ Error signing out: " + error.message));
+      }
+    });
   </script>
 
-  <!-- Non-module script for attaching click events -->
+  <!-- ✅ App Logic -->
   <script>
-    document.getElementById('toggleLink').addEventListener('click', () => toggleForm());
-    document.getElementById('forgotPasswordLink').addEventListener('click', () => resetPassword());
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    const currencyEl = document.getElementById('currency');
+    const soundAdd = document.getElementById('sound-add');
+    const soundError = document.getElementById('sound-error');
+    const muteBtn = document.getElementById('muteBtn');
+    let isMuted = false;
+    let selectedType = 'expense';
+
+    function selectType(type) {
+      selectedType = type;
+      alert(type === 'income' ? 'Selected Income' : 'Selected Expense');
+    }
+
+    function addTransaction() {
+      const amount = parseFloat(document.getElementById('amount').value);
+      const category = document.getElementById('category').value;
+      const date = document.getElementById('date').value;
+      const notes = document.getElementById('notes').value;
+
+      if (!amount || !date) {
+        if (!isMuted) soundError.play();
+        alert('⚠️ Please enter amount and date.');
+        return;
+      }
+
+      const transaction = { amount, type: selectedType, category, date, notes };
+      transactions.push(transaction);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      if (!isMuted) soundAdd.play();
+      alert('🎉 Transaction added!');
+      document.getElementById('amount').value = '';
+      document.getElementById('notes').value = '';
+      calculateSummary();
+      renderTransactionList();
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      muteBtn.innerText = isMuted ? '🔇 Unmute' : '🔈 Mute';
+    }
+
+    function calculateSummary() {
+      let income = 0, expense = 0;
+      transactions.forEach(t => {
+        if (t.type === 'income') income += t.amount;
+        else expense += t.amount;
+      });
+      const symbol = currencyEl.value;
+      document.getElementById('totalIncome').innerText = symbol + income.toFixed(2);
+      document.getElementById('totalExpense').innerText = symbol + expense.toFixed(2);
+      drawChart();
+    }
+
+    function renderTransactionList() {
+      const list = document.getElementById('transactionList');
+      list.innerHTML = '';
+      transactions.forEach((t) => {
+        const item = document.createElement('li');
+        item.textContent = `📅 ${t.date} - ${t.category} - ${t.type} - ${currencyEl.value}${t.amount}`;
+        list.appendChild(item);
+      });
+    }
+
+    function filterTransactions() {
+      const search = document.getElementById('searchBox').value.toLowerCase();
+      const list = document.getElementById('transactionList');
+      list.innerHTML = '';
+      transactions.filter(t => {
+        return t.category.toLowerCase().includes(search) ||
+               t.date.includes(search) ||
+               t.amount.toString().includes(search);
+      }).forEach((t) => {
+        const item = document.createElement('li');
+        item.textContent = `📅 ${t.date} - ${t.category} - ${t.type} - ${currencyEl.value}${t.amount}`;
+        list.appendChild(item);
+      });
+    }
+
+    function drawChart() {
+      const ctx = document.getElementById('summaryChart').getContext('2d');
+      const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+      const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+      if (window.summaryChart) window.summaryChart.destroy();
+      window.summaryChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Income', 'Expenses'],
+          datasets: [{
+            data: [income, expense],
+            backgroundColor: ['#4CAF50', '#f44336']
+          }]
+        },
+        options: {
+          responsive: true
+        }
+      });
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    currencyEl.addEventListener('change', () => {
+      calculateSummary();
+      renderTransactionList();
+    });
+
+    window.onload = () => {
+      calculateSummary();
+      renderTransactionList();
+    };
   </script>
 </body>
 </html>
